@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NHM HR , Hooghly</title>
+ 
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <style>
+    :root {
+      --hr-primary: #22d3ee;
+      --hr-primary-dark: #06b6d4;
+      --hr-accent: #38bdf8;
+      --hr-indigo: #818cf8;
+      --hr-amber: #fbbf24;
+      --hr-rose: #fb7185;
+      --hr-emerald: #34d399;
+      --hr-bg: #05070c;
+      --hr-glass: rgba(15, 23, 42, 0.58);
+      --hr-glass-strong: rgba(10, 15, 28, 0.78);
+      --hr-border: rgba(255, 255, 255, 0.12);
+      --hr-border-glow: rgba(34, 211, 238, 0.35);
+      --hr-text-main: #f8fafc;
+      --hr-text-muted: #94a3b8;
+    }
+
+    body {
+      background-color: var(--hr-bg);
+      background-image:
+        radial-gradient(circle at 12% 15%, rgba(34, 211, 238, 0.16) 0%, transparent 38%),
+        radial-gradient(circle at 88% 18%, rgba(129, 140, 248, 0.16) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(52, 211, 153, 0.10) 0%, transparent 45%);
+      background-attachment: fixed;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--hr-text-main);
+      min-height: 100vh;
+    }
+
+    /* Dark theme text & Bootstrap overrides */
+    .text-secondary,
+    .text-muted {
+      color: var(--hr-text-muted) !important;
+    }
+
+    /* Navbar */
+    .hr-header {
+      background: rgba(5, 8, 16, 0.72);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      color: #fff;
+      padding: 1.1rem 2rem;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.22);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65), 0 1px 24px rgba(34, 211, 238, 0.12);
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(34, 211, 238, 0.14);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(34, 211, 238, 0.45);
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+    }
+
+    .btn-glow-refresh {
+      background: rgba(34, 211, 238, 0.14);
+      color: #67e8f9;
+      border: 1px solid rgba(34, 211, 238, 0.45);
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.22);
+      transition: all 0.22s ease;
+    }
+    .btn-glow-refresh:hover {
+      background: rgba(34, 211, 238, 0.26);
+      color: #ffffff;
+      border-color: #22d3ee;
+      box-shadow: 0 0 24px rgba(34, 211, 238, 0.5);
+    }
+
+    /* Frosted Glass Panel Base */
+    .kpi-card,
+    .tally-panel,
+    .filter-panel,
+    .chart-container,
+    .table-card {
+      background: var(--hr-glass);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid var(--hr-border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    /* KPI Cards */
+    .kpi-card {
+      border-radius: 16px;
+      padding: 1.15rem 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+      height: 100%;
+    }
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--kpi-accent, var(--hr-primary));
+      box-shadow: 0 0 16px var(--kpi-accent, var(--hr-primary));
+    }
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--kpi-accent, var(--hr-border-glow));
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px var(--kpi-glow, rgba(34, 211, 238, 0.22));
+    }
+    .kpi-icon-wrap {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: var(--kpi-icon-bg, rgba(34, 211, 238, 0.14));
+      color: var(--kpi-accent, var(--hr-primary));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 14px var(--kpi-glow, rgba(34, 211, 238, 0.2));
+    }
+    .kpi-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--hr-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .kpi-value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-top: 0.45rem;
+      line-height: 1.2;
+      text-shadow: 0 0 14px rgba(255, 255, 255, 0.18);
+    }
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--hr-text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Tally Base KPI Section */
+    .tally-panel {
+      border-radius: 16px;
+      padding: 1.15rem 1.35rem;
+      margin-bottom: 1.5rem;
+    }
+    .tally-panel-title {
+      color: #5eead4;
+      text-shadow: 0 0 12px rgba(45, 212, 191, 0.35);
+    }
+    .tally-summary-pill {
+      background: rgba(34, 211, 238, 0.12) !important;
+      color: #67e8f9 !important;
+      border: 1px solid rgba(34, 211, 238, 0.35) !important;
+    }
+    .tally-chip-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(45, 212, 191, 0.25);
+      border-radius: 12px;
+      padding: 0.75rem 0.95rem;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .tally-chip-card:hover {
+      transform: translateY(-2px);
+      border-color: #2dd4bf;
+      box-shadow: 0 0 18px rgba(45, 212, 191, 0.25);
+    }
+    .tally-code-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #5eead4;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .tally-staff-badge {
+      background: rgba(52, 211, 153, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+    }
+    .tally-amount {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    /* Filters Section */
+    .filter-panel {
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .filter-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .filter-panel .form-select,
+    .table-card .form-control,
+    .modal-content .form-control {
+      background-color: rgba(10, 15, 28, 0.75);
+      color: #f8fafc;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.84rem;
+    }
+    .filter-panel .form-select option {
+      background-color: #0b1120;
+      color: #f8fafc;
+    }
+    .filter-panel .form-select:focus,
+    .table-card .form-control:focus,
+    .modal-content .form-control:focus {
+      background-color: rgba(10, 15, 28, 0.92);
+      color: #ffffff;
+      border-color: var(--hr-primary);
+      box-shadow: 0 0 0 0.2rem rgba(34, 211, 238, 0.22), 0 0 14px rgba(34, 211, 238, 0.25);
+    }
+    .form-control::placeholder {
+      color: #64748b;
+    }
+
+    /* Charts */
+    .chart-container {
+      border-radius: 16px;
+      padding: 1.25rem;
+      height: 340px;
+    }
+
+    /* Data Table */
+    .table-card {
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+    .table {
+      color: var(--hr-text-main);
+      --bs-table-bg: transparent;
+      --bs-table-color: #f1f5f9;
+      --bs-table-hover-color: #ffffff;
+      --bs-table-hover-bg: rgba(34, 211, 238, 0.08);
+    }
+    .table thead th {
+      background: rgba(15, 23, 42, 0.82);
+      color: #67e8f9;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.28);
+      white-space: nowrap;
+      padding: 0.85rem 0.75rem;
+    }
+    .table td {
+      font-size: 0.85rem;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.75rem;
+    }
+
+    /* Service Tenure Pill */
+    .tenure-pill {
+      background: rgba(34, 211, 238, 0.14);
+      color: #67e8f9;
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      border-radius: 9999px;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
+    }
+
+    .salary-badge {
+      background: rgba(52, 211, 153, 0.14);
+      color: #6ee7b7;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      border-radius: 8px;
+      padding: 0.25rem 0.55rem;
+      font-weight: 700;
+      display: inline-block;
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.18);
+    }
+
+    /* Glowing Action Buttons */
+    .btn-outline-primary {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+    .btn-outline-primary:hover {
+      background-color: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+    }
+    .btn-outline-danger {
+      color: #fb7185;
+      border-color: rgba(251, 113, 133, 0.45);
+    }
+    .btn-outline-danger:hover {
+      background-color: rgba(251, 113, 133, 0.2);
+      border-color: #fb7185;
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(251, 113, 133, 0.45);
+    }
+
+    /* Modals */
+    .modal-content {
+      background: var(--hr-glass-strong);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      color: var(--hr-text-main);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(34, 211, 238, 0.15);
+    }
+    .modal-header,
+    .modal-footer {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    /* Security PIN dialog styling */
+    .pin-input {
+      letter-spacing: 0.5rem;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="hr-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
+      <div class="brand-badge">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7Vig7gyIjBkHluN1S8VidqHVYyxLbqeGYXF7-n7gwNQ&s=10" alt="NHM HR, Hooghly Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 11px;">
+      </div>
+      <div>
+        <h5 class="mb-0 fw-bold">NHM HR , Hooghly</h5>
+        <small class="text-muted">Health & Family Welfare Deptt. | Human Resources Analytics</small>
+      </div>
+    </div>
+    <button class="btn btn-sm btn-glow-refresh fw-semibold px-3 rounded-pill" onclick="loadData()">
+      <i class="fa-solid fa-rotate me-1"></i> Refresh Data
+    </button>
+  </header>
+
+  <div class="container-fluid px-4 py-4">
+    <!-- Top KPI Cards -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-3 mb-4">
+      <div class="col">
+        <div class="kpi-card" style="--kpi-accent: #38bdf8; --kpi-icon-bg: rgba(56, 189, 248, 0.14); --kpi-glow: rgba(56, 189, 248, 0.28);">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="kpi-title">Total Staff Count</div>
+            <span class="kpi-icon-wrap"><i class="fa-solid fa-users"></i></span>
+          </div>
+          <div class="kpi-value" id="kpi-count">0</div>
+          <div class="kpi-sub">Active filtered employees</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="kpi-card" style="--kpi-accent: #34d399; --kpi-icon-bg: rgba(52, 211, 153, 0.14); --kpi-glow: rgba(52, 211, 153, 0.28);">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="kpi-title">Total Salary (Spl. Inc.)</div>
+            <span class="kpi-icon-wrap"><i class="fa-solid fa-indian-rupee-sign"></i></span>
+          </div>
+          <div class="kpi-value" id="kpi-salary">₹0</div>
+          <div class="kpi-sub">Salary with Spl. Increment</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="kpi-card" style="--kpi-accent: #fbbf24; --kpi-icon-bg: rgba(251, 191, 36, 0.14); --kpi-glow: rgba(251, 191, 36, 0.26);">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="kpi-title">Total Arrears</div>
+            <span class="kpi-icon-wrap"><i class="fa-solid fa-wallet"></i></span>
+          </div>
+          <div class="kpi-value" id="kpi-arrear">₹0</div>
+          <div class="kpi-sub">Cumulative arrear amount</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="kpi-card" style="--kpi-accent: #818cf8; --kpi-icon-bg: rgba(129, 140, 248, 0.14); --kpi-glow: rgba(129, 140, 248, 0.28);">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="kpi-title">Avg Tenure (Years)</div>
+            <span class="kpi-icon-wrap"><i class="fa-solid fa-clock-rotate-left"></i></span>
+          </div>
+          <div class="kpi-value" id="kpi-tenure">0.0 yrs</div>
+          <div class="kpi-sub">Mean service duration</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="kpi-card" style="--kpi-accent: #fb7185; --kpi-icon-bg: rgba(251, 113, 133, 0.14); --kpi-glow: rgba(251, 113, 133, 0.28);">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="kpi-title">Tally Base KPI</div>
+            <span class="kpi-icon-wrap"><i class="fa-solid fa-layer-group"></i></span>
+          </div>
+          <div class="kpi-value" id="kpi-tally-count">0</div>
+          <div class="kpi-sub" id="kpi-tally-sub">0 Tally-mapped staff</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tally-Wise KPI Breakdown -->
+    <div class="tally-panel">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="fw-bold text-uppercase fs-6 tally-panel-title">
+          <i class="fa-solid fa-chart-simple me-2"></i>Tally Base KPI Breakdown
+        </div>
+        <span class="badge rounded-pill tally-summary-pill" id="tally-summary-badge">0 Tally Groups</span>
+      </div>
+      <div class="row g-2" id="tally-kpi-grid">
+        <div class="col-12 text-muted small">Loading Tally breakdown...</div>
+      </div>
+    </div>
+
+    <!-- Dependent Multi-Filters -->
+    <div class="filter-panel">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="fw-bold text-uppercase fs-6" style="color: #7dd3fc;">
+          <i class="fa-solid fa-filter me-1"></i> Cascading Filters
+        </div>
+        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="resetFilters()">
+          <i class="fa-solid fa-xmark me-1"></i> Clear Filters
+        </button>
+      </div>
+      <div class="row g-2">
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Posting Place</label>
+          <select id="filter-posting-place" class="form-select form-select-sm" onchange="applyCascadingFilters('postingPlace')">
+            <option value="">All Locations</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Major Programme Head</label>
+          <select id="filter-major-prog" class="form-select form-select-sm" onchange="applyCascadingFilters('majorProgHead')">
+            <option value="">All Major Programmes</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Programme Head</label>
+          <select id="filter-prog-head" class="form-select form-select-sm" onchange="applyCascadingFilters('progHead')">
+            <option value="">All Programme Heads</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Posting Level</label>
+          <select id="filter-posting-level" class="form-select form-select-sm" onchange="applyCascadingFilters('postingLevel')">
+            <option value="">All Levels</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Designation</label>
+          <select id="filter-designation" class="form-select form-select-sm" onchange="applyCascadingFilters('designation')">
+            <option value="">All Designations</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Tally Code</label>
+          <select id="filter-tally-code" class="form-select form-select-sm" onchange="applyCascadingFilters('tallyCode')">
+            <option value="">All Tally Codes</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Self Fund</label>
+          <select id="filter-self-fund" class="form-select form-select-sm" onchange="applyCascadingFilters('selfFund')">
+            <option value="">All Self Funds</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Child Fund</label>
+          <select id="filter-child-fund" class="form-select form-select-sm" onchange="applyCascadingFilters('childFund')">
+            <option value="">All Child Funds</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section (Above Table) -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="chart-container">
+          <h6 class="fw-bold mb-3" style="color: #7dd3fc;"><i class="fa-solid fa-chart-pie me-1"></i> Headcount by Major Programme</h6>
+          <canvas id="progChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="chart-container">
+          <h6 class="fw-bold mb-3" style="color: #6ee7b7;"><i class="fa-solid fa-chart-column me-1"></i> Top Designations by Salary (Spl. Inc.)</h6>
+          <canvas id="salaryChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Table (Below Charts) -->
+    <div class="table-card">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h6 class="fw-bold mb-0" style="color: #e2e8f0;">
+          <i class="fa-solid fa-table-list me-1 text-info"></i> Staff Directory (<span id="visible-count">0</span> records)
+        </h6>
+        <input type="text" id="table-search" class="form-control form-control-sm w-25" style="min-width: 220px;" placeholder="Quick Search Name / Code..." oninput="handleTableSearch()">
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Employee Info</th>
+              <th>Designation & Place</th>
+              <th>Programme / Level</th>
+              <th>Salary (Spl. Inc.)</th>
+              <th>Service Tenure</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employee-tbody">
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm text-info me-2"></div> Loading records from Sheet...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Employee Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header text-white" style="background: linear-gradient(120deg, rgba(15, 23, 42, 0.9) 0%, rgba(6, 182, 212, 0.35) 100%);">
+          <h6 class="modal-title"><i class="fa-solid fa-user-pen me-2 text-info"></i> Edit Employee Record</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <input type="hidden" id="edit-row-index">
+            <input type="hidden" id="edit-code">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Name</label>
+                <input type="text" id="edit-name" class="form-control form-control-sm" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Mobile</label>
+                <input type="text" id="edit-mobile" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Designation</label>
+                <input type="text" id="edit-designation" class="form-control form-control-sm" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Posting Place</label>
+                <input type="text" id="edit-posting-place" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-bold">Revised Salary</label>
+                <input type="number" id="edit-salary" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-bold">Salary with Spl. Increment</label>
+                <input type="number" id="edit-salary-spl" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-bold">Arrear</label>
+                <input type="number" id="edit-arrear" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Major Programme Head</label>
+                <input type="text" id="edit-major-prog" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Posting Level</label>
+                <input type="text" id="edit-posting-level" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label small fw-bold">Remarks</label>
+                <textarea id="edit-remarks" class="form-control form-control-sm" rows="2"></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-info btn-sm fw-semibold" onclick="promptPinForUpdate()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIN Authentication Modal -->
+  <div class="modal fade" id="pinModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h6 class="modal-title fw-bold text-danger"><i class="fa-solid fa-shield-halved me-1"></i> Admin Security PIN</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center pt-2">
+          <p class="small text-muted mb-3">Please enter your 4-digit administrative PIN code to authorize this action.</p>
+          <input type="password" id="auth-pin" maxlength="4" class="form-control pin-input mb-3" placeholder="••••" autofocus>
+          <div id="pin-error" class="text-danger small fw-bold d-none">Invalid PIN code. Try again.</div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-light btn-sm w-100" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger btn-sm w-100" onclick="submitPinAuthorizedAction()">Confirm Action</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let allEmployees = [];
+    let filteredEmployees = [];
+    let pendingAction = null; // Stores { type: 'EDIT' | 'DELETE', payload: ... }
+    let progChartInstance = null;
+    let salaryChartInstance = null;
+
+    window.onload = function() {
+      loadData();
+    };
+
+    function loadData() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (!response.success) {
+            alert("Error loading data: " + response.message);
+            return;
+          }
+          allEmployees = response.rows;
+          filteredEmployees = [...allEmployees];
+          populateFilters();
+          renderDashboard();
+        })
+        .withFailureHandler(function(err) {
+          alert("Failure connecting to server: " + err);
+        })
+        .getEmployeeData();
+    }
+
+    /* Populating cascading dropdown options */
+    function populateFilters() {
+      const keys = [
+        { id: 'filter-posting-place', key: 'postingPlace' },
+        { id: 'filter-major-prog', key: 'majorProgHead' },
+        { id: 'filter-prog-head', key: 'progHead' },
+        { id: 'filter-posting-level', key: 'postingLevel' },
+        { id: 'filter-designation', key: 'designation' },
+        { id: 'filter-tally-code', key: 'tallyCode' },
+        { id: 'filter-self-fund', key: 'selfFund' },
+        { id: 'filter-child-fund', key: 'childFund' }
+      ];
+
+      keys.forEach(f => {
+        const select = document.getElementById(f.id);
+        const currVal = select.value;
+        const uniqueVals = [...new Set(filteredEmployees.map(e => e[f.key]).filter(Boolean))].sort();
+        
+        select.innerHTML = `<option value="">All ${f.key.replace(/([A-Z])/g, ' $1')}</option>`;
+        uniqueVals.forEach(v => {
+          const opt = document.createElement("option");
+          opt.value = v;
+          opt.textContent = v;
+          if (v == currVal) opt.selected = true;
+          select.appendChild(opt);
+        });
+      });
+    }
+
+    /* Dependent Cascading Filter logic */
+    function applyCascadingFilters(changedKey) {
+      const pPlace = document.getElementById('filter-posting-place').value;
+      const majProg = document.getElementById('filter-major-prog').value;
+      const progH = document.getElementById('filter-prog-head').value;
+      const pLevel = document.getElementById('filter-posting-level').value;
+      const desig = document.getElementById('filter-designation').value;
+      const tally = document.getElementById('filter-tally-code').value;
+      const selfF = document.getElementById('filter-self-fund').value;
+      const childF = document.getElementById('filter-child-fund').value;
+
+      filteredEmployees = allEmployees.filter(e => {
+        return (!pPlace || e.postingPlace == pPlace) &&
+               (!majProg || e.majorProgHead == majProg) &&
+               (!progH || e.progHead == progH) &&
+               (!pLevel || e.postingLevel == pLevel) &&
+               (!desig || e.designation == desig) &&
+               (!tally || e.tallyCode == tally) &&
+               (!selfF || e.selfFund == selfF) &&
+               (!childF || e.childFund == childF);
+      });
+
+      populateFilters();
+      renderDashboard();
+    }
+
+    function resetFilters() {
+      document.querySelectorAll('.filter-panel select').forEach(s => s.value = "");
+      filteredEmployees = [...allEmployees];
+      populateFilters();
+      renderDashboard();
+    }
+
+    function handleTableSearch() {
+      const q = document.getElementById('table-search').value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#employee-tbody tr');
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    /* Rendering KPIs, Tally Breakdown, Charts and Data Table */
+    function renderDashboard() {
+      // 1. KPIs (Salary sourced from "Salary with Spl. Increment")
+      const count = filteredEmployees.length;
+      const totalSalary = filteredEmployees.reduce((acc, e) => acc + (e.salarySplInc || 0), 0);
+      const totalArrear = filteredEmployees.reduce((acc, e) => acc + (e.arrear || 0), 0);
+      const avgTenure = count > 0 
+        ? (filteredEmployees.reduce((acc, e) => acc + (e.yearsWorking || 0), 0) / count).toFixed(1)
+        : 0;
+
+      // Tally Base KPI aggregation
+      const tallyMap = {};
+      let tallyAssignedCount = 0;
+      filteredEmployees.forEach(e => {
+        const tCode = e.tallyCode ? String(e.tallyCode).trim() : '';
+        const groupKey = tCode || 'Unassigned';
+        if (tCode) tallyAssignedCount++;
+        if (!tallyMap[groupKey]) {
+          tallyMap[groupKey] = { count: 0, salary: 0 };
+        }
+        tallyMap[groupKey].count += 1;
+        tallyMap[groupKey].salary += (e.salarySplInc || 0);
+      });
+
+      const uniqueAssignedTally = Object.keys(tallyMap).filter(k => k !== 'Unassigned').length;
+
+      document.getElementById('kpi-count').textContent = count.toLocaleString();
+      document.getElementById('kpi-salary').textContent = "₹" + totalSalary.toLocaleString('en-IN');
+      document.getElementById('kpi-arrear').textContent = "₹" + totalArrear.toLocaleString('en-IN');
+      document.getElementById('kpi-tenure').textContent = avgTenure + " yrs";
+      document.getElementById('kpi-tally-count').textContent = uniqueAssignedTally.toLocaleString();
+      document.getElementById('kpi-tally-sub').textContent = `${tallyAssignedCount.toLocaleString()} Tally-mapped staff`;
+      document.getElementById('visible-count').textContent = count;
+
+      renderTallyKpiGrid(tallyMap);
+
+      // 2. Charts
+      renderCharts();
+
+      // 3. Table Rows
+      const tbody = document.getElementById('employee-tbody');
+      tbody.innerHTML = '';
+
+      if (count === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No records match the current filter selection.</td></tr>`;
+        return;
+      }
+
+      filteredEmployees.forEach((emp, idx) => {
+        const cleanMobile = emp.mobile ? String(emp.mobile).replace(/[^\d+]/g, '') : '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-muted small">${idx + 1}</td>
+          <td>
+            <div class="fw-bold">${emp.name || 'Unnamed'}</div>
+            <div class="small text-muted">
+              <span>Code: ${emp.code}</span>
+              ${emp.mobile ? ` • <a href="tel:${cleanMobile || emp.mobile}" target="_top" class="text-info text-decoration-none" title="Call ${emp.mobile}"><i class="fa-solid fa-phone small"></i> ${emp.mobile}</a>` : ''}
+            </div>
+          </td>
+          <td>
+            <div>${emp.designation}</div>
+            <div class="small text-muted"><i class="fa-solid fa-location-dot small"></i> ${emp.postingPlace}</div>
+          </td>
+          <td>
+            <div>${emp.majorProgHead}</div>
+            <div class="small text-muted">${emp.postingLevel}</div>
+          </td>
+          <td>
+            <span class="salary-badge">₹${(emp.salarySplInc || 0).toLocaleString('en-IN')}</span>
+          </td>
+          <td>
+            <span class="tenure-pill">
+              <i class="fa-solid fa-business-time"></i> ${emp.yearsWorking} Years
+            </span>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditModal(${emp.rowIndex})">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="promptPinForDelete(${emp.rowIndex}, '${emp.code}')">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderTallyKpiGrid(tallyMap) {
+      const grid = document.getElementById('tally-kpi-grid');
+      const entries = Object.entries(tallyMap).sort((a, b) => b[1].salary - a[1].salary);
+      document.getElementById('tally-summary-badge').textContent = `${entries.length} Tally Group${entries.length === 1 ? '' : 's'}`;
+
+      if (entries.length === 0) {
+        grid.innerHTML = `<div class="col-12 text-muted small">No Tally records available for the current filters.</div>`;
+        return;
+      }
+
+      grid.innerHTML = '';
+      entries.forEach(([code, stats]) => {
+        const col = document.createElement('div');
+        col.className = 'col-6 col-md-4 col-lg-3 col-xl-2';
+        col.innerHTML = `
+          <div class="tally-chip-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="tally-code-label text-truncate" title="${code}">${code}</span>
+              <span class="badge rounded-pill tally-staff-badge">${stats.count} staff</span>
+            </div>
+            <div class="tally-amount">₹${stats.salary.toLocaleString('en-IN')}</div>
+          </div>
+        `;
+        grid.appendChild(col);
+      });
+    }
+
+    function renderCharts() {
+      // Aggregate by Major Programme
+      const progCounts = {};
+      filteredEmployees.forEach(e => {
+        const p = e.majorProgHead || 'Other';
+        progCounts[p] = (progCounts[p] || 0) + 1;
+      });
+
+      if (progChartInstance) progChartInstance.destroy();
+      const ctx1 = document.getElementById('progChart').getContext('2d');
+      progChartInstance = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(progCounts),
+          datasets: [{
+            data: Object.values(progCounts),
+            backgroundColor: ['#22d3ee', '#34d399', '#818cf8', '#fbbf24', '#fb7185', '#a78bfa'],
+            borderWidth: 2,
+            borderColor: 'rgba(10, 15, 28, 0.9)'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { boxWidth: 12, color: '#cbd5e1' }
+            }
+          }
+        }
+      });
+
+      // Aggregate top designations by Salary with Spl. Increment
+      const desigSalary = {};
+      filteredEmployees.forEach(e => {
+        const d = e.designation || 'Other';
+        desigSalary[d] = (desigSalary[d] || 0) + (e.salarySplInc || 0);
+      });
+
+      const sortedDesigs = Object.entries(desigSalary)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, 5);
+
+      if (salaryChartInstance) salaryChartInstance.destroy();
+      const ctx2 = document.getElementById('salaryChart').getContext('2d');
+      salaryChartInstance = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: sortedDesigs.map(d => d[0].length > 18 ? d[0].substring(0, 18) + '...' : d[0]),
+          datasets: [{
+            label: 'Salary with Spl. Increment (INR)',
+            data: sortedDesigs.map(d => d[1]),
+            backgroundColor: ['#22d3ee', '#34d399', '#818cf8', '#38bdf8', '#2dd4bf'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              ticks: { color: '#cbd5e1' },
+              grid: { color: 'rgba(255, 255, 255, 0.06)' }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { color: '#cbd5e1' },
+              grid: { color: 'rgba(255, 255, 255, 0.08)' }
+            }
+          }
+        }
+      });
+    }
+
+    /* Modal & Authentication Functions */
+    function openEditModal(rowIndex) {
+      const emp = allEmployees.find(e => e.rowIndex === rowIndex);
+      if (!emp) return;
+
+      document.getElementById('edit-row-index').value = emp.rowIndex;
+      document.getElementById('edit-code').value = emp.code;
+      document.getElementById('edit-name').value = emp.name;
+      document.getElementById('edit-mobile').value = emp.mobile;
+      document.getElementById('edit-designation').value = emp.designation;
+      document.getElementById('edit-posting-place').value = emp.postingPlace;
+      document.getElementById('edit-salary').value = emp.revisedSalary;
+      document.getElementById('edit-salary-spl').value = emp.salarySplInc;
+      document.getElementById('edit-arrear').value = emp.arrear;
+      document.getElementById('edit-major-prog').value = emp.majorProgHead;
+      document.getElementById('edit-posting-level').value = emp.postingLevel;
+      document.getElementById('edit-remarks').value = emp.remarks;
+
+      const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+      editModal.show();
+    }
+
+    function promptPinForUpdate() {
+      const payload = {
+        rowIndex: document.getElementById('edit-row-index').value,
+        code: document.getElementById('edit-code').value,
+        name: document.getElementById('edit-name').value,
+        mobile: document.getElementById('edit-mobile').value,
+        designation: document.getElementById('edit-designation').value,
+        postingPlace: document.getElementById('edit-posting-place').value,
+        revisedSalary: Number(document.getElementById('edit-salary').value),
+        salarySplInc: Number(document.getElementById('edit-salary-spl').value),
+        arrear: Number(document.getElementById('edit-arrear').value),
+        majorProgHead: document.getElementById('edit-major-prog').value,
+        postingLevel: document.getElementById('edit-posting-level').value,
+        remarks: document.getElementById('edit-remarks').value
+      };
+
+      pendingAction = { type: 'EDIT', payload: payload };
+      openPinModal();
+    }
+
+    function promptPinForDelete(rowIndex, empCode) {
+      if (!confirm(`Are you sure you want to permanently delete Employee ${empCode}?`)) return;
+      pendingAction = { type: 'DELETE', rowIndex: rowIndex, empCode: empCode };
+      openPinModal();
+    }
+
+    function openPinModal() {
+      document.getElementById('auth-pin').value = '';
+      document.getElementById('pin-error').classList.add('d-none');
+      const pinModal = new bootstrap.Modal(document.getElementById('pinModal'));
+      pinModal.show();
+    }
+
+    function submitPinAuthorizedAction() {
+      const pin = document.getElementById('auth-pin').value;
+      if (!pin) {
+        document.getElementById('pin-error').classList.remove('d-none');
+        return;
+      }
+
+      if (pendingAction.type === 'EDIT') {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            handleServerActionResponse(res);
+          })
+          .updateEmployeeRecord(pendingAction.payload, pin);
+      } else if (pendingAction.type === 'DELETE') {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            handleServerActionResponse(res);
+          })
+          .deleteEmployeeRecord(pendingAction.rowIndex, pendingAction.empCode, pin);
+      }
+    }
+
+    function handleServerActionResponse(res) {
+      if (!res.success) {
+        document.getElementById('pin-error').textContent = res.message;
+        document.getElementById('pin-error').classList.remove('d-none');
+        return;
+      }
+
+      // Close modals
+      bootstrap.Modal.getInstance(document.getElementById('pinModal')).hide();
+      const editModalEl = document.getElementById('editModal');
+      const editModalInst = bootstrap.Modal.getInstance(editModalEl);
+      if (editModalInst) editModalInst.hide();
+
+      alert(res.message);
+      loadData(); // Reload table
+    }
+  </script>
+</body>
+</html>

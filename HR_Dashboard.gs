@@ -8,7 +8,7 @@ const SHEET_NAME = "Sheet1";
 const ADMIN_PIN = "3669"; // Required for Edit and Delete operations
 
 function doGet() {
-  return HtmlService.createTemplateFromFile("Index_HR")
+  return HtmlService.createTemplateFromFile("Index")
     .evaluate()
     .setTitle("NHM HR , Hooghly")
     .addMetaTag("viewport", "width=device-width, initial-scale=1")
